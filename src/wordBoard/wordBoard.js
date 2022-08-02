@@ -27,7 +27,7 @@ const GameBoard = ({ Letters }) => {
                 setAvailableTiles([1, 4, 5]);
                 break;
             case 1:
-                setAvailableTiles([0, 1, 4, 5, 6, 2]);
+                setAvailableTiles([0, 4, 5, 6, 2]);
                 break;
             case 2:
                 setAvailableTiles([1, 5, 6, 7, 3]);
