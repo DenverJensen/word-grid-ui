@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import './wordBoard.css';
 import { Box, Center, Spinner } from '@chakra-ui/react';
 
-const GameBoard = ({ Letters }) => {
+const GameBoard = ({ Letters, username }) => {
     const [SelectedTiles, setSelectedTiles] = useState([]);
     const [CurrentTile, setCurrentTile] = useState({
         letter: null,
@@ -16,6 +16,7 @@ const GameBoard = ({ Letters }) => {
     }, [CurrentTile]);
 
     const handleTileClick = (letter, index) => {
+        console.log(username);
         for (let i in SelectedTiles) {
             if (SelectedTiles[i] === index) {
                 setMessage('Tile Already Selected');

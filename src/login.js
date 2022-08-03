@@ -1,31 +1,33 @@
 import { Input, Button } from "@mui/material";
 import { useState } from "react";
 
-const Login = (props) => {
-    const [username, setUserName] = useState("");
-    const [disableStartGameBtn, setdisableStartGameBtn] = useState(false);
+const Login = ({
+    connection,
+    playerCount,
+    setPlayerCount,
+    setUsername,
+    setLetters,
+}) => {
+    const [user, setUser] = useState("");
     const [msg, setMsg] = useState("");
-    
     const handleStartGame = (e) => {
-        
-        if (username === "") {
-            setMsg("Enter a username.");
-        } else {
-            //setdisableStartGameBtn(true);
-            props.connection
-                .invoke("Numplayers", username)
-                .catch((err) => console.error(err.toString()));
-            props.connection.on("NumPlayersCount", (playerCount, user) => {
-                if(playerCount==1){
-                    props.setPlayer1(user);
-                    setMsg("Waiting for player 2.");
-                }
-                if(playerCount==2){
-                    props.setPlayer2(user);
-                }
-            });
-        }
-       
+        connection
+            .invoke("Numplayers")
+            .catch((err) => console.error(err.toString()));
+        connection.on("NumPlayersCount", (playerCount) => {
+            if (playerCount == 1) {
+                setMsg("Waiting for player 2.");
+            }
+            if (playerCount == 2) {
+                setPlayerCount(2);
+                connection
+                    .invoke("GetLetters")
+                    .catch((err) => console.error(err.toString()));
+            }
+        });
+        connection.on("SendRandomLetters", (letters) => {
+            setLetters(letters);
+        });
     };
     return (
         <>
@@ -36,7 +38,8 @@ const Login = (props) => {
                     variant="outlined"
                     type="text"
                     onChange={(e) => {
-                        setUserName(e.target.value);
+                        setUser(e.target.value);
+                        setUsername(e.target.value);
                     }}
                 />
                 <div className="mt-4">
@@ -44,7 +47,7 @@ const Login = (props) => {
                         className="options mt-4"
                         variant="contained"
                         onClick={handleStartGame}
-                        disabled={disableStartGameBtn}
+                        disabled={!user}
                     >
                         start game
                     </Button>
