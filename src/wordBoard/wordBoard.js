@@ -42,7 +42,6 @@ const GameBoard = ({ Letters, username }) => {
             setSelectedTiles([index, ...SelectedTiles]);
             setMessage('');
         }
-        console.log(SelectedTiles);
     };
 
     const setTiles = () => {
@@ -110,11 +109,11 @@ const GameBoard = ({ Letters, username }) => {
                 return 'dodgerblue';
             }
         }
-        // for (let i in AvailableTiles) {
-        //     if (AvailableTiles[i] === index) {
-        //         return 'lightgreen';
-        //     }
-        // }
+        for (let i in AvailableTiles) {
+            if (AvailableTiles[i] === index) {
+                return 'lightgreen';
+            }
+        }
         return 'lightblue';
     };
 
@@ -126,13 +125,13 @@ const GameBoard = ({ Letters, username }) => {
                         <Box
                             className={'board-tile '}
                             backgroundColor={colorStyle(index)}
-                            //colorScheme={'pink'}
+                            fontSize="lg"
+                            fontWeight= 'bold'
                             onClick={() => {
                                 handleTileClick(letter, index);
                             }}
                             key={index}
                             id={index}
-                            //color={'green'}
                         >
                             <h1>{letter}</h1>
                         </Box>
