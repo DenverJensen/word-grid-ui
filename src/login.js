@@ -15,10 +15,10 @@ const Login = ({
             .invoke("Numplayers")
             .catch((err) => console.error(err.toString()));
         connection.on("NumPlayersCount", (playerCount) => {
-            if (playerCount == 1) {
+            if (playerCount === 1) {
                 setMsg("Waiting for player 2.");
             }
-            if (playerCount == 2) {
+            if (playerCount === 2) {
                 setPlayerCount(2);
                 connection
                     .invoke("GetLetters")
@@ -32,7 +32,7 @@ const Login = ({
     return (
         <>
             <div className="container">
-                <h1 className="title">Grid Word Finder</h1>
+                <h1 className="title">Nerdle</h1>
                 <h6 className="mt-4">Enter a username</h6>
                 <Input
                     variant="outlined"
