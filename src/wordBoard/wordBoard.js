@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 import ResultScreen from "../resultScreen";
 
-const GameBoard = ({ Letters, username }) => {
+const GameBoard = ({ Letters, username, connection }) => {
     const [SelectedTiles, setSelectedTiles] = useState([]);
     const [CurrentTile, setCurrentTile] = useState({
         letter: null,
@@ -256,6 +256,7 @@ const GameBoard = ({ Letters, username }) => {
                     <ResultScreen
                         Words={ConfirmedWords}
                         username={username}
+                        connection={connection}
                     ></ResultScreen>
                 </>
             )}

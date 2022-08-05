@@ -8,12 +8,21 @@ import {
     ChakraProvider,
 } from "@chakra-ui/react";
 
-const ResultScreen = ({Words, username}) => {
-    
+const ResultScreen = ({ Words, username, connection }) => {
     const [score, setScore] = useState(0);
+    const[winner, setWinner] = useState("");
 
     useEffect(() => {
         getScore();
+        let playerScore = score;
+        console.log(playerScore);
+        connection
+            .invoke("NerdleWinner", username, playerScore)
+            .catch((err) => console.error(err.toString()));
+        connection.on("SendNerdleWinner", (winner) => {
+            setWinner(winner);
+        });
+        
     }, []);
     const getScore = () => {
         {
@@ -62,7 +71,7 @@ const ResultScreen = ({Words, username}) => {
                         fontSize="5xl"
                         fontWeight="extrabold"
                     >
-                        {username.toUpperCase()} WINS!
+                        {winner.toUpperCase()}
                     </Text>
                 </Center>
 
