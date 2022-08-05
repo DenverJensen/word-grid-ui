@@ -1,9 +1,15 @@
-import { Input, Button } from "@mui/material";
 import { useState } from "react";
+import {
+    Box,
+    Input,
+    Button,
+    Center,
+    Text,
+    ChakraProvider,
+} from "@chakra-ui/react";
 
 const Login = ({
     connection,
-    playerCount,
     setPlayerCount,
     setUsername,
     setLetters,
@@ -30,31 +36,56 @@ const Login = ({
         });
     };
     return (
-        <>
-            <div className="container">
-                <h1 className="title">Nerdle</h1>
-                <h6 className="mt-4">Enter a username</h6>
-                <Input
-                    variant="outlined"
-                    type="text"
-                    onChange={(e) => {
-                        setUser(e.target.value);
-                        setUsername(e.target.value);
-                    }}
-                />
-                <div className="mt-4">
-                    <Button
-                        className="options mt-4"
-                        variant="contained"
-                        onClick={handleStartGame}
-                        disabled={!user}
+        <ChakraProvider>
+            <Center>
+                {" "}
+                <Box pt={50}>
+                    <Text
+                        bgGradient="linear(to-l,orange.500, orange.200  )"
+                        bgClip="text"
+                        fontSize="5xl"
+                        fontWeight="extrabold"
                     >
-                        start game
-                    </Button>
-                    <h6 className="text-danger mt-4">{msg}</h6>
-                </div>
-            </div>
-        </>
+                        Nerdle
+                    </Text>
+                    <Text
+                        pt={50}
+                        bg="blue.300"
+                        bgClip="text"
+                        fontSize="2xl"
+                        fontWeight="extrabold"
+                    >
+                        Enter a username
+                    </Text>
+                    <Input
+                        variant="flushed"
+                        onChange={(e) => {
+                            setUser(e.target.value);
+                            setUsername(e.target.value);
+                        }}
+                    />
+                    <Box pt={10}>
+                        <Button
+                            colorScheme="blue"
+                            variant="solid"
+                            onClick={handleStartGame}
+                            disabled={!user}
+                        >
+                            start game
+                        </Button>
+                    </Box>
+                    <Text
+                        pt={5}
+                        bg="red.300"
+                        bgClip="text"
+                        fontSize="2xl"
+                        fontWeight="extrabold"
+                    >
+                        {msg}
+                    </Text>
+                </Box>
+            </Center>
+        </ChakraProvider>
     );
 };
 

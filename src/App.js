@@ -55,7 +55,7 @@ const App = () => {
         setConnection(connection);
     }, []);
 
-    return playerCount == 2 ? (
+    return playerCount === 2 ? (
         <ChakraProvider>
             <div className="game-container">
                 {/* add game items here */}
@@ -67,7 +67,6 @@ const App = () => {
             connection={connection}
             setUsername={setUsername}
             setPlayerCount={setPlayerCount}
-            playerCount={playerCount}
             setLetters={setLetters}
         />
     );

@@ -8,9 +8,8 @@ import {
     ChakraProvider,
 } from "@chakra-ui/react";
 
-const ResultScreen = () => {
-    const Words = ["Dogs", "Badger", "Elk", "Wolf", "Frog", "Dear","123456789"];
-    const username = "Matt";
+const ResultScreen = ({Words, username}) => {
+    
     const [score, setScore] = useState(0);
 
     useEffect(() => {
@@ -20,7 +19,6 @@ const ResultScreen = () => {
         {
             let pts = 0;
             Words.map((word) => {
-                console.log(word.length);
                 switch (word.length) {
                     case 3:
                         pts = pts + 1;

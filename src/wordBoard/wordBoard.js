@@ -1,16 +1,18 @@
-import { useEffect, useState } from 'react';
-import './wordBoard.css';
+import { useEffect, useState } from "react";
+import "./wordBoard.css";
+import Timer from "../timer";
 import {
     Box,
     Button,
     Center,
-    Flex,
     Grid,
     Heading,
     Spinner,
     Text,
-    VStack,
-} from '@chakra-ui/react';
+    ListItem,
+    UnorderedList,
+} from "@chakra-ui/react";
+import ResultScreen from "../resultScreen";
 
 const GameBoard = ({ Letters, username }) => {
     const [SelectedTiles, setSelectedTiles] = useState([]);
@@ -21,12 +23,13 @@ const GameBoard = ({ Letters, username }) => {
     const [AvailableTiles, setAvailableTiles] = useState([]);
     const [Message, setMessage] = useState();
     const [ConfirmedWords, setConfirmedWords] = useState([
-        'test',
-        'words',
-        'here',
+        "test",
+        "words",
+        "here",
     ]);
     const [SelectedLetters, setSelectedLetters] = useState([]);
-    const [wordBuild, setwordBuild] = useState('');
+    const [wordBuild, setwordBuild] = useState("");
+    const [timer, setTimer] = useState(10);
 
     useEffect(() => {
         setTiles();
@@ -36,7 +39,7 @@ const GameBoard = ({ Letters, username }) => {
         console.log(username);
         for (let i in SelectedTiles) {
             if (SelectedTiles[i] === index) {
-                setMessage('Tile Already Selected');
+                setMessage("Tile Already Selected");
                 return;
             }
         }
@@ -51,15 +54,15 @@ const GameBoard = ({ Letters, username }) => {
                 setCurrentTile({ letter, TileIndex: index });
                 setSelectedTiles([index, ...SelectedTiles]);
                 setwordBuild(wordBuild + letter);
-                setMessage('');
+                setMessage("");
             } else {
-                setMessage('Invalid Tile');
+                setMessage("Invalid Tile");
             }
         } else {
             setCurrentTile({ letter, TileIndex: index });
             setSelectedTiles([index, ...SelectedTiles]);
             setwordBuild(wordBuild + letter);
-            setMessage('');
+            setMessage("");
         }
     };
 
@@ -114,7 +117,7 @@ const GameBoard = ({ Letters, username }) => {
                 setAvailableTiles([14, 10, 11]);
                 break;
             default:
-                setAvailableTiles([])
+                setAvailableTiles([]);
                 break;
         }
         return;
@@ -122,31 +125,31 @@ const GameBoard = ({ Letters, username }) => {
 
     const colorStyle = (index) => {
         if (index === CurrentTile.TileIndex) {
-            return 'green';
+            return "green";
         }
         for (let i in SelectedTiles) {
             if (SelectedTiles[i] === index) {
-                return 'dodgerblue';
+                return "dodgerblue";
             }
         }
         for (let i in AvailableTiles) {
             if (AvailableTiles[i] === index) {
-                return 'lightgreen';
+                return "lightgreen";
             }
         }
-        return 'lightblue';
+        return "lightblue";
     };
 
     const handleReset = () => {
-        console.log('reset');
+        console.log("reset");
         setSelectedTiles([]);
         setCurrentTile({
             letter: null,
             TileIndex: null,
         });
         setSelectedLetters([]);
-        setwordBuild("")
-        setTiles()
+        setwordBuild("");
+        setTiles();
     };
 
     const handleSubmitWord = () => {
@@ -155,79 +158,107 @@ const GameBoard = ({ Letters, username }) => {
 
     return Letters ? (
         <>
-            <Grid templateColumns={'1fr 1fr 1fr'}>
-                <Box>
-                    {ConfirmedWords.length > 0 && (
-                        <Box pt={50}>
+            {Letters && timer !== -1 && (
+                <>
+                    {" "}
+                    <Center m={10}>
+                        <Timer timer={timer} setTimer={setTimer}></Timer>
+                    </Center>
+                    <Grid templateColumns={"1fr 1fr 1fr"}>
+                        <Box width="50%" m={100}>
                             <Center>
-                                <Heading>Confired Words</Heading>
+                                <Text
+                                    bg="blue.300"
+                                    bgClip="text"
+                                    fontSize="2xl"
+                                    fontWeight="extrabold"
+                                >
+                                    Words found
+                                </Text>
                             </Center>
-                            {ConfirmedWords.map((word, index) => (
-                                <Center
-                                    className={'word-list'}
+                            <Center
+                                border="2px"
+                                borderColor="orange.200"
+                                bg="orange.50"
+                                borderRadius="lg"
+                            >
+                                <UnorderedList m={4}>
+                                    {ConfirmedWords.map((word) => (
+                                        <ListItem
+                                            fontSize="lg"
+                                            fontWeight="bold"
+                                            key={word}
+                                        >
+                                            <Text bg="blue.200" bgClip="text">
+                                                {word}
+                                            </Text>
+                                        </ListItem>
+                                    ))}
+                                </UnorderedList>
+                            </Center>
+                        </Box>
+                        <Box className="board-container" mt={50}>
+                            {Letters.map((letter, index) => (
+                                <Box
+                                    className={"board-tile "}
+                                    backgroundColor={colorStyle(index)}
                                     fontSize="lg"
                                     fontWeight="bold"
-                                    key={word}
-                                    id={word}
+                                    onClick={() => {
+                                        handleTileClick(letter, index);
+                                    }}
+                                    key={index}
+                                    id={index}
                                 >
-                                    <Box p={'1px'}>{word}</Box>
-                                </Center>
+                                    <Heading>{letter}</Heading>
+                                </Box>
                             ))}
                         </Box>
-                    )}
-                </Box>
-                <Box className="board-container">
-                    {Letters.map((letter, index) => (
-                        <Box
-                            className={'board-tile '}
-                            backgroundColor={colorStyle(index)}
-                            fontSize="lg"
-                            fontWeight="bold"
-                            onClick={() => {
-                                handleTileClick(letter, index);
-                            }}
-                            key={index}
-                            id={index}
-                        >
-                            <Heading>{letter}</Heading>
+                        <Box>
+                            <Center>
+                                <Grid pt={200} templateColumns={"1fr"} gap={20}>
+                                    <Button
+                                        colorScheme={"blue"}
+                                        onClick={() => {
+                                            handleSubmitWord();
+                                        }}
+                                    >
+                                        Submit Word
+                                    </Button>
+                                    <Button
+                                        colorScheme={"red"}
+                                        onClick={() => {
+                                            handleReset();
+                                        }}
+                                    >
+                                        Clear Board
+                                    </Button>
+                                </Grid>
+                            </Center>
                         </Box>
-                    ))}
-                </Box>
-                <Box>
-                    <Center>
-                        <Grid pt={200} templateColumns={'1fr'} gap={20}>
-                            <Button
-                                colorScheme={'blue'}
-                                onClick={() => {
-                                    handleSubmitWord();
-                                }}
-                            >
-                                Submit Word
-                            </Button>
-                            <Button
-                                colorScheme={'red'}
-                                onClick={() => {
-                                    handleReset();
-                                }}
-                            >
-                                Clear Board
-                            </Button>
-                        </Grid>
-                    </Center>
-                </Box>
-                <Box></Box>
-                <Box pt={5}>
-                    <Center textColor={'red'} fontWeight={'bold'}>
-                        {Message}
-                    </Center>
-                    <Center>
-                        <Heading color={'dodgerblue'}>
-                            <Text as="u">{wordBuild}</Text>
-                        </Heading>
-                    </Center>
-                </Box>
-                <Box></Box>
-            </Grid>
+                        <Box></Box>
+                        <Box pt={5}>
+                            <Center textColor={"red"} fontWeight={"bold"}>
+                                {Message}
+                            </Center>
+                            <Center>
+                                <Heading color={"dodgerblue"}>
+                                    <Text as="u">{wordBuild}</Text>
+                                </Heading>
+                            </Center>
+                        </Box>
+                        <Box></Box>
+                    </Grid>
+                </>
+            )}
+            {timer === -1 && (
+                <>
+                    <ResultScreen
+                        Words={ConfirmedWords}
+                        username={username}
+                    ></ResultScreen>
+                </>
+            )}
         </>
     ) : (
         <Center>
