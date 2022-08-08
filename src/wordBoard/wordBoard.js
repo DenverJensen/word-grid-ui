@@ -22,21 +22,16 @@ const GameBoard = ({ Letters, username, connection }) => {
     });
     const [AvailableTiles, setAvailableTiles] = useState([]);
     const [Message, setMessage] = useState();
-    const [ConfirmedWords, setConfirmedWords] = useState([
-        "test",
-        "words",
-        "here",
-    ]);
+    const [ConfirmedWords, setConfirmedWords] = useState([]);
     const [SelectedLetters, setSelectedLetters] = useState([]);
     const [wordBuild, setwordBuild] = useState("");
-    const [timer, setTimer] = useState(10);
+    const [timer, setTimer] = useState(15);
 
     useEffect(() => {
         setTiles();
     }, [CurrentTile]);
 
     const handleTileClick = (letter, index) => {
-        console.log(username);
         for (let i in SelectedTiles) {
             if (SelectedTiles[i] === index) {
                 setMessage("Tile Already Selected");
@@ -154,6 +149,21 @@ const GameBoard = ({ Letters, username, connection }) => {
 
     const handleSubmitWord = () => {
         console.log(wordBuild);
+        connection
+            .invoke("IsValidWord", wordBuild)
+            .catch((err) => console.error(err.toString()));
+        connection.on("SendIsValidWord", (word) => {
+            if (word) {
+                setConfirmedWords(() => [
+                    wordBuild.toLowerCase(),
+                    ...ConfirmedWords,
+                ]);
+                handleReset();
+            } else {
+                setMessage("Invalid word.");
+                handleReset();
+            }
+        });
     };
 
     return Letters ? (
