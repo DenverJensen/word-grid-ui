@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
     Box,
     Center,
@@ -6,27 +6,24 @@ import {
     ListItem,
     UnorderedList,
     ChakraProvider,
-} from '@chakra-ui/react';
+} from "@chakra-ui/react";
 
 const ResultScreen = ({ Words, username, connection }) => {
     const [score, setScore] = useState(0);
-    const [winner, setWinner] = useState('');
+    const [winner, setWinner] = useState("");
 
     useEffect(() => {
         getScore();
-        let playerScore = score;
-        console.log(playerScore);
-        connection
-            .invoke('NerdleWinner', username, playerScore)
-            .catch((err) => console.error(err.toString()));
-        connection.on('SendNerdleWinner', (winner) => {
-            setWinner(winner);
-        });
     }, [Words]);
 
     useEffect(() => {
-        console.log(score);
-    }, [score]);
+        connection
+            .invoke("NerdleWinner", username, score)
+            .catch((err) => console.error(err.toString()));
+        connection.on("SendNerdleWinner", (winner) => {
+            setWinner(winner);
+        });
+    }, [score, winner]);
 
     const getScore = () => {
         {
@@ -117,7 +114,7 @@ const ResultScreen = ({ Words, username, connection }) => {
             </Box>
             <Center>
                 <Text fontWeight="bold" fontSize="lg" m={10}>
-                    Your Score is <span className="text-warning">{score}</span>
+                    Your Score is <span className="text-warning">{score} </span>
                     pts
                 </Text>
             </Center>

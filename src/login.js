@@ -18,7 +18,7 @@ const Login = ({
     const [msg, setMsg] = useState("");
     const handleStartGame = (e) => {
         connection
-            .invoke("Numplayers")
+            .invoke("Numplayers", user)
             .catch((err) => console.error(err.toString()));
         connection.on("NumPlayersCount", (playerCount) => {
             if (playerCount === 1) {
