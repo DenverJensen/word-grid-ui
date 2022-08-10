@@ -26,7 +26,7 @@ const GameBoard = ({ Letters, username, connection }) => {
     const [ConfirmedWords, setConfirmedWords] = useState([]);
     const [SelectedLetters, setSelectedLetters] = useState([]);
     const [wordBuild, setwordBuild] = useState("");
-    const [timer, setTimer] = useState(60);
+    const [timer, setTimer] = useState(120);
     const [foundWord, setFoundWord] = useState("");
 
     useEffect(() => {
@@ -238,7 +238,7 @@ const GameBoard = ({ Letters, username, connection }) => {
                             <Center textColor={"red"} fontWeight={"bold"}>
                                 {Message}
                             </Center>
-                            <Center textColor={"blue.300"} fontWeight={"bold"}>
+                            <Center textColor={"red"} fontWeight={"bold"}>
                                 {foundWord}
                             </Center>
                         </Box>

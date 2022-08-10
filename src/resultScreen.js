@@ -39,7 +39,7 @@ const ResultScreen = ({ Words, username, connection }) => {
                 }
             }
         );
-    }, []);
+    },[player2Words]);
 
     const getScore = () => {
         {
