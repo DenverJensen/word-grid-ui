@@ -1,29 +1,45 @@
 import { useState, useEffect } from "react";
-import {
-    Box,
-    Center,
-    Text,
-    ListItem,
-    UnorderedList,
-    ChakraProvider,
-} from "@chakra-ui/react";
+import TwoPlayerScreen from "./twoPlayerScreen";
+import { Center, Text, ChakraProvider } from "@chakra-ui/react";
 
 const ResultScreen = ({ Words, username, connection }) => {
     const [score, setScore] = useState(0);
+    const [player1, setPlayer1] = useState();
+    const [player2, setPlayer2] = useState();
+    const [p1Score, setP1Score] = useState(0);
+    const [p2Score, setP2Score] = useState(0);
     const [winner, setWinner] = useState("");
-
+    const [player1Words, setPlayer1Words] = useState([]);
+    const [player2Words, setPlayer2Words] = useState([]);
+    
     useEffect(() => {
         getScore();
     }, [Words]);
 
     useEffect(() => {
         connection
-            .invoke("NerdleWinner", username, score)
+            .invoke("NerdleWinner", username, score, Words)
             .catch((err) => console.error(err.toString()));
-        connection.on("SendNerdleWinner", (winner) => {
-            setWinner(winner);
-        });
-    }, [score, winner]);
+    }, [score]);
+
+    useEffect(() => {
+        connection.on(
+            "SendNerdleWinner",
+            (winner, p1, p2, p1Score, p2Score, p1Words, p2Words) => {
+                setWinner(winner);
+                setPlayer1(p1);
+                setPlayer2(p2);
+                setP1Score(p1Score);
+                setP2Score(p2Score);
+                if (p1Words != null) {
+                    setPlayer1Words(p1Words);
+                }
+                if (p2Words != null) {
+                    setPlayer2Words(p2Words);
+                }
+            }
+        );
+    }, []);
 
     const getScore = () => {
         {
@@ -64,60 +80,26 @@ const ResultScreen = ({ Words, username, connection }) => {
     };
     return (
         <ChakraProvider>
-            <Box pt={50}>
-                <Center>
-                    <Text
-                        bgGradient="linear(to-l,orange.500, orange.200  )"
-                        bgClip="text"
-                        fontSize="5xl"
-                        fontWeight="extrabold"
-                    >
-                        {winner.toUpperCase()}
-                    </Text>
-                </Center>
-
-                <Center mt="10">
-                    <Text
-                        bg="blue.300"
-                        bgClip="text"
-                        fontSize="2xl"
-                        fontWeight="extrabold"
-                    >
-                        Words found
-                    </Text>
-                </Center>
-                <Center>
-                    <Box width="25%">
-                        <Center
-                            border="2px"
-                            borderColor="orange.200"
-                            bg="orange.50"
-                            borderRadius="lg"
-                        >
-                            <UnorderedList m={4}>
-                                {Words.map((word, index) => (
-                                    <ListItem
-                                        fontSize="lg"
-                                        fontWeight="bold"
-                                        key={word}
-                                        id={index + 1}
-                                    >
-                                        <Text bg="blue.200" bgClip="text">
-                                            {word}
-                                        </Text>
-                                    </ListItem>
-                                ))}
-                            </UnorderedList>
-                        </Center>
-                    </Box>
-                </Center>
-            </Box>
-            <Center>
-                <Text fontWeight="bold" fontSize="lg" m={10}>
-                    Your Score is <span className="text-warning">{score} </span>
-                    pts
+            <Center m={50}>
+                <Text
+                    bgGradient="linear(to-l,orange.500, orange.200  )"
+                    bgClip="text"
+                    fontSize="5xl"
+                    fontWeight="extrabold"
+                >
+                    {winner.toUpperCase()}
                 </Text>
             </Center>
+            <TwoPlayerScreen
+                username={player1}
+                score={p1Score}
+                Words={player1Words}
+            ></TwoPlayerScreen>
+            <TwoPlayerScreen
+                username={player2}
+                score={p2Score}
+                Words={player2Words}
+            ></TwoPlayerScreen>
         </ChakraProvider>
     );
 };
