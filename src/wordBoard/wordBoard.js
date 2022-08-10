@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import './wordBoard.css';
-import Timer from '../timer';
+import { useEffect, useState} from "react";
+import "./wordBoard.css";
+import Timer from "../timer";
 import {
     Box,
     Button,
@@ -12,8 +12,8 @@ import {
     ListItem,
     UnorderedList,
     HStack,
-} from '@chakra-ui/react';
-import ResultScreen from '../resultScreen';
+} from "@chakra-ui/react";
+import ResultScreen from "../resultScreen";
 
 const GameBoard = ({ Letters, username, connection }) => {
     const [SelectedTiles, setSelectedTiles] = useState([]);
@@ -25,17 +25,19 @@ const GameBoard = ({ Letters, username, connection }) => {
     const [Message, setMessage] = useState();
     const [ConfirmedWords, setConfirmedWords] = useState([]);
     const [SelectedLetters, setSelectedLetters] = useState([]);
-    const [wordBuild, setwordBuild] = useState('');
-    const [timer, setTimer] = useState(120);
+    const [wordBuild, setwordBuild] = useState("");
+    const [timer, setTimer] = useState(30);
+
 
     useEffect(() => {
         setTiles();
     }, [CurrentTile]);
 
+
     const handleTileClick = (letter, index) => {
         for (let i in SelectedTiles) {
             if (SelectedTiles[i] === index) {
-                setMessage('Tile Already Selected');
+                setMessage("Tile Already Selected");
                 return;
             }
         }
@@ -50,15 +52,15 @@ const GameBoard = ({ Letters, username, connection }) => {
                 setCurrentTile({ letter, TileIndex: index });
                 setSelectedTiles([index, ...SelectedTiles]);
                 setwordBuild(wordBuild + letter);
-                setMessage('');
+                setMessage("");
             } else {
-                setMessage('Invalid Tile');
+                setMessage("Invalid Tile");
             }
         } else {
             setCurrentTile({ letter, TileIndex: index });
             setSelectedTiles([index, ...SelectedTiles]);
             setwordBuild(wordBuild + letter);
-            setMessage('');
+            setMessage("");
         }
     };
 
@@ -121,67 +123,70 @@ const GameBoard = ({ Letters, username, connection }) => {
 
     const colorStyle = (index) => {
         if (index === CurrentTile.TileIndex) {
-            return 'green';
+            return "green";
         }
         for (let i in SelectedTiles) {
             if (SelectedTiles[i] === index) {
-                return 'dodgerblue';
+                return "dodgerblue";
             }
         }
         for (let i in AvailableTiles) {
             if (AvailableTiles[i] === index) {
-                return 'lightgreen';
+                return "lightgreen";
             }
         }
-        return 'lightblue';
+        return "lightblue";
     };
 
     const handleReset = () => {
-        console.log('reset');
+        console.log("reset");
         setSelectedTiles([]);
         setCurrentTile({
             letter: null,
             TileIndex: null,
         });
         setSelectedLetters([]);
-        setwordBuild('');
+        setwordBuild("");
         setTiles();
-        setMessage('');
+        setMessage("");
     };
 
     const handleSubmitWord = () => {
         console.log(wordBuild);
-        connection
-            .invoke('IsValidWord', wordBuild)
-            .catch((err) => console.error(err.toString()));
-        connection.on('SendIsValidWord', (word) => {
-            if (word) {
-                setConfirmedWords(() => [
-                    wordBuild.toLowerCase(),
-                    ...ConfirmedWords,
-                ]);
-                handleReset();
-            } else {
-                setMessage('Invalid word.');
-                handleReset();
-            }
-        });
+        if (ConfirmedWords.includes(wordBuild.toLowerCase())) {
+            setMessage("You already found " + wordBuild + ".");
+        } else {
+            connection
+                .invoke("IsValidWord", wordBuild)
+                .catch((err) => console.error(err.toString()));
+            connection.on("SendIsValidWord", (word) => {
+                if (word) {
+                    setConfirmedWords(() => [
+                        wordBuild.toLowerCase(),
+                        ...ConfirmedWords,
+                    ]);
+                    handleReset();
+                } else {
+                    setMessage("Invalid word.");
+                }
+            });
+        }
     };
 
     return Letters ? (
         <>
             {Letters && timer !== -1 && (
                 <>
-                    {' '}
+                    {" "}
                     <Center mt={3}>
                         <Timer timer={timer} setTimer={setTimer}></Timer>
                     </Center>
-                    <Grid templateColumns={'1fr'}>
+                    <Grid templateColumns={"1fr"}>
                         <Center>
                             <Box className="board-container" mt={5}>
                                 {Letters.map((letter, index) => (
                                     <Center
-                                        className={'board-tile '}
+                                        className={"board-tile "}
                                         backgroundColor={colorStyle(index)}
                                         fontSize="lg"
                                         fontWeight="bold"
@@ -197,9 +202,9 @@ const GameBoard = ({ Letters, username, connection }) => {
                             </Box>
                         </Center>
 
-                        <Center pt={10} templateColumns={'1fr 1fr'} gap={10}>
+                        <Center pt={10} templateColumns={"1fr 1fr"} gap={10}>
                             <Button
-                                colorScheme={'red'}
+                                colorScheme={"red"}
                                 onClick={() => {
                                     handleReset();
                                 }}
@@ -207,7 +212,7 @@ const GameBoard = ({ Letters, username, connection }) => {
                                 Clear Board
                             </Button>
                             <Button
-                                colorScheme={'blue'}
+                                colorScheme={"blue"}
                                 onClick={() => {
                                     handleSubmitWord();
                                 }}
@@ -217,11 +222,11 @@ const GameBoard = ({ Letters, username, connection }) => {
                         </Center>
                         <Box pt={5} height="50px">
                             <Center>
-                                <Heading color={'dodgerblue'}>
+                                <Heading color={"dodgerblue"}>
                                     <Text as="u">{wordBuild}</Text>
                                 </Heading>
                             </Center>
-                            <Center textColor={'red'} fontWeight={'bold'}>
+                            <Center textColor={"red"} fontWeight={"bold"}>
                                 {Message}
                             </Center>
                         </Box>
