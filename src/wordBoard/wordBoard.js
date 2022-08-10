@@ -1,4 +1,4 @@
-import { useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import "./wordBoard.css";
 import Timer from "../timer";
 import {
@@ -26,13 +26,21 @@ const GameBoard = ({ Letters, username, connection }) => {
     const [ConfirmedWords, setConfirmedWords] = useState([]);
     const [SelectedLetters, setSelectedLetters] = useState([]);
     const [wordBuild, setwordBuild] = useState("");
-    const [timer, setTimer] = useState(30);
-
+    const [timer, setTimer] = useState(60);
+    const [foundWord, setFoundWord] = useState("");
 
     useEffect(() => {
         setTiles();
     }, [CurrentTile]);
 
+    useEffect(() => {
+        connection.on("SendFoundWord", (message) => {
+            setFoundWord(message);
+        });
+        setTimeout(() => {
+            setFoundWord("");
+        }, 3000);
+    }, [foundWord]);
 
     const handleTileClick = (letter, index) => {
         for (let i in SelectedTiles) {
@@ -165,6 +173,7 @@ const GameBoard = ({ Letters, username, connection }) => {
                         wordBuild.toLowerCase(),
                         ...ConfirmedWords,
                     ]);
+                    connection.invoke("FoundWord", username);
                     handleReset();
                 } else {
                     setMessage("Invalid word.");
@@ -228,6 +237,9 @@ const GameBoard = ({ Letters, username, connection }) => {
                             </Center>
                             <Center textColor={"red"} fontWeight={"bold"}>
                                 {Message}
+                            </Center>
+                            <Center textColor={"blue.300"} fontWeight={"bold"}>
+                                {foundWord}
                             </Center>
                         </Box>
                         <Center>

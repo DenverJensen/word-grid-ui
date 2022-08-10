@@ -26,7 +26,7 @@ const ResultScreen = ({ Words, username, connection }) => {
         connection.on(
             "SendNerdleWinner",
             (winner, p1, p2, p1Score, p2Score, p1Words, p2Words) => {
-                setWinner(winner + " wins!");
+                setWinner(winner);
                 setPlayer1(p1);
                 setPlayer2(p2);
                 setP1Score(p1Score);
