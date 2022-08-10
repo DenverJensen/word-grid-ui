@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import "./wordBoard.css";
-import Timer from "../timer";
+import { useEffect, useState } from 'react';
+import './wordBoard.css';
+import Timer from '../timer';
 import {
     Box,
     Button,
@@ -11,8 +11,9 @@ import {
     Text,
     ListItem,
     UnorderedList,
-} from "@chakra-ui/react";
-import ResultScreen from "../resultScreen";
+    HStack,
+} from '@chakra-ui/react';
+import ResultScreen from '../resultScreen';
 
 const GameBoard = ({ Letters, username, connection }) => {
     const [SelectedTiles, setSelectedTiles] = useState([]);
@@ -24,8 +25,8 @@ const GameBoard = ({ Letters, username, connection }) => {
     const [Message, setMessage] = useState();
     const [ConfirmedWords, setConfirmedWords] = useState([]);
     const [SelectedLetters, setSelectedLetters] = useState([]);
-    const [wordBuild, setwordBuild] = useState("");
-    const [timer, setTimer] = useState(15);
+    const [wordBuild, setwordBuild] = useState('');
+    const [timer, setTimer] = useState(120);
 
     useEffect(() => {
         setTiles();
@@ -34,7 +35,7 @@ const GameBoard = ({ Letters, username, connection }) => {
     const handleTileClick = (letter, index) => {
         for (let i in SelectedTiles) {
             if (SelectedTiles[i] === index) {
-                setMessage("Tile Already Selected");
+                setMessage('Tile Already Selected');
                 return;
             }
         }
@@ -49,15 +50,15 @@ const GameBoard = ({ Letters, username, connection }) => {
                 setCurrentTile({ letter, TileIndex: index });
                 setSelectedTiles([index, ...SelectedTiles]);
                 setwordBuild(wordBuild + letter);
-                setMessage("");
+                setMessage('');
             } else {
-                setMessage("Invalid Tile");
+                setMessage('Invalid Tile');
             }
         } else {
             setCurrentTile({ letter, TileIndex: index });
             setSelectedTiles([index, ...SelectedTiles]);
             setwordBuild(wordBuild + letter);
-            setMessage("");
+            setMessage('');
         }
     };
 
@@ -120,39 +121,40 @@ const GameBoard = ({ Letters, username, connection }) => {
 
     const colorStyle = (index) => {
         if (index === CurrentTile.TileIndex) {
-            return "green";
+            return 'green';
         }
         for (let i in SelectedTiles) {
             if (SelectedTiles[i] === index) {
-                return "dodgerblue";
+                return 'dodgerblue';
             }
         }
         for (let i in AvailableTiles) {
             if (AvailableTiles[i] === index) {
-                return "lightgreen";
+                return 'lightgreen';
             }
         }
-        return "lightblue";
+        return 'lightblue';
     };
 
     const handleReset = () => {
-        console.log("reset");
+        console.log('reset');
         setSelectedTiles([]);
         setCurrentTile({
             letter: null,
             TileIndex: null,
         });
         setSelectedLetters([]);
-        setwordBuild("");
+        setwordBuild('');
         setTiles();
+        setMessage('');
     };
 
     const handleSubmitWord = () => {
         console.log(wordBuild);
         connection
-            .invoke("IsValidWord", wordBuild)
+            .invoke('IsValidWord', wordBuild)
             .catch((err) => console.error(err.toString()));
-        connection.on("SendIsValidWord", (word) => {
+        connection.on('SendIsValidWord', (word) => {
             if (word) {
                 setConfirmedWords(() => [
                     wordBuild.toLowerCase(),
@@ -160,7 +162,7 @@ const GameBoard = ({ Letters, username, connection }) => {
                 ]);
                 handleReset();
             } else {
-                setMessage("Invalid word.");
+                setMessage('Invalid word.');
                 handleReset();
             }
         });
@@ -170,94 +172,96 @@ const GameBoard = ({ Letters, username, connection }) => {
         <>
             {Letters && timer !== -1 && (
                 <>
-                    {" "}
-                    <Center m={10}>
+                    {' '}
+                    <Center mt={3}>
                         <Timer timer={timer} setTimer={setTimer}></Timer>
                     </Center>
-                    <Grid templateColumns={"1fr 1fr 1fr"}>
-                        <Box width="50%" m={100}>
-                            <Center>
-                                <Text
-                                    bg="blue.300"
-                                    bgClip="text"
-                                    fontSize="2xl"
-                                    fontWeight="extrabold"
-                                >
-                                    Words found
-                                </Text>
-                            </Center>
-                            <Center
-                                border="2px"
-                                borderColor="orange.200"
-                                bg="orange.50"
-                                borderRadius="lg"
+                    <Grid templateColumns={'1fr'}>
+                        <Center>
+                            <Box className="board-container" mt={5}>
+                                {Letters.map((letter, index) => (
+                                    <Center
+                                        className={'board-tile '}
+                                        backgroundColor={colorStyle(index)}
+                                        fontSize="lg"
+                                        fontWeight="bold"
+                                        onClick={() => {
+                                            handleTileClick(letter, index);
+                                        }}
+                                        key={index}
+                                        id={index}
+                                    >
+                                        <Heading>{letter}</Heading>
+                                    </Center>
+                                ))}
+                            </Box>
+                        </Center>
+
+                        <Center pt={10} templateColumns={'1fr 1fr'} gap={10}>
+                            <Button
+                                colorScheme={'red'}
+                                onClick={() => {
+                                    handleReset();
+                                }}
                             >
-                                <UnorderedList m={4}>
-                                    {ConfirmedWords.map((word) => (
-                                        <ListItem
-                                            fontSize="lg"
-                                            fontWeight="bold"
-                                            key={word}
-                                        >
-                                            <Text bg="blue.200" bgClip="text">
-                                                {word}
-                                            </Text>
-                                        </ListItem>
-                                    ))}
-                                </UnorderedList>
-                            </Center>
-                        </Box>
-                        <Box className="board-container" mt={50}>
-                            {Letters.map((letter, index) => (
-                                <Box
-                                    className={"board-tile "}
-                                    backgroundColor={colorStyle(index)}
-                                    fontSize="lg"
-                                    fontWeight="bold"
-                                    onClick={() => {
-                                        handleTileClick(letter, index);
-                                    }}
-                                    key={index}
-                                    id={index}
-                                >
-                                    <Heading>{letter}</Heading>
-                                </Box>
-                            ))}
-                        </Box>
-                        <Box>
+                                Clear Board
+                            </Button>
+                            <Button
+                                colorScheme={'blue'}
+                                onClick={() => {
+                                    handleSubmitWord();
+                                }}
+                            >
+                                Submit Word
+                            </Button>
+                        </Center>
+                        <Box pt={5} height="50px">
                             <Center>
-                                <Grid pt={200} templateColumns={"1fr"} gap={20}>
-                                    <Button
-                                        colorScheme={"blue"}
-                                        onClick={() => {
-                                            handleSubmitWord();
-                                        }}
-                                    >
-                                        Submit Word
-                                    </Button>
-                                    <Button
-                                        colorScheme={"red"}
-                                        onClick={() => {
-                                            handleReset();
-                                        }}
-                                    >
-                                        Clear Board
-                                    </Button>
-                                </Grid>
-                            </Center>
-                        </Box>
-                        <Box></Box>
-                        <Box pt={5}>
-                            <Center textColor={"red"} fontWeight={"bold"}>
-                                {Message}
-                            </Center>
-                            <Center>
-                                <Heading color={"dodgerblue"}>
+                                <Heading color={'dodgerblue'}>
                                     <Text as="u">{wordBuild}</Text>
                                 </Heading>
                             </Center>
+                            <Center textColor={'red'} fontWeight={'bold'}>
+                                {Message}
+                            </Center>
                         </Box>
-                        <Box></Box>
+                        <Center>
+                            <Box width="50%" m={10}>
+                                <Center>
+                                    <Text
+                                        bg="blue.300"
+                                        bgClip="text"
+                                        fontSize="2xl"
+                                        fontWeight="extrabold"
+                                    >
+                                        Words found
+                                    </Text>
+                                </Center>
+                                <Center
+                                    border="2px"
+                                    borderColor="orange.200"
+                                    bg="orange.50"
+                                    borderRadius="lg"
+                                >
+                                    <UnorderedList m={4}>
+                                        {ConfirmedWords.map((word) => (
+                                            <ListItem
+                                                fontSize="lg"
+                                                fontWeight="bold"
+                                                key={word}
+                                            >
+                                                <Text
+                                                    bg="blue.200"
+                                                    bgClip="text"
+                                                >
+                                                    {word}
+                                                </Text>
+                                            </ListItem>
+                                        ))}
+                                    </UnorderedList>
+                                </Center>
+                            </Box>
+                        </Center>
                     </Grid>
                 </>
             )}
